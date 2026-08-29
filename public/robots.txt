@@ -1,4 +1,20 @@
+# Lord Reigneth Foods — robots.txt
+# https://lordreignethfoods.com
+
 User-agent: *
 Allow: /
 
+# ── Private / operational routes — do not index ──
+Disallow: /admin
+Disallow: /admin/
+Disallow: /staff
+Disallow: /staff/
+Disallow: /account
+Disallow: /orders
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /auth/
+
+# ── Sitemap ──
 Sitemap: https://lordreignethfoods.com/sitemap.xml
