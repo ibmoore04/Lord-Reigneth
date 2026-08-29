@@ -7,6 +7,7 @@ import { LoadingState } from '../../components/ui/States';
 import { OrderStatusTracker } from '../../components/ordering/OrderStatusTracker';
 import { OrderActionPanel } from '../../components/ordering/OrderActionPanel';
 import type { Order, OrderStatus } from '../../types/database';
+import type { OrderWithItems } from '../../services/orderService';
 import {
   ArrowLeft, Phone, MapPin, Printer,
   Globe, MessageCircle, Package, Truck,
@@ -30,7 +31,9 @@ export function StaffOrderDetailPage() {
 
   // Local copy so status/payment updates reflect instantly
   const [order, setOrder] = useState<Order | null>(null);
-  const displayOrder = order ?? initialOrder;
+  const displayOrder = (order
+    ? { ...(initialOrder ?? {}), ...order }
+    : initialOrder) as OrderWithItems | null;
 
   return (
     <StaffLayout outletName={outlet?.name}>

@@ -51,7 +51,7 @@ function getClient(): SupabaseClient<Database> {
  * safe fallback so the UI still renders from static local data.
  * In production (Vercel / any host with env vars set) this is the real client.
  */
-export const supabase = new Proxy({} as SupabaseClient<Database>, {
+export const supabase: any = new Proxy({} as any, {
   get(_target, prop) {
     if (!isSupabaseConfigured) {
       // Return safe stubs for the three surfaces the app uses.
@@ -74,14 +74,13 @@ export const supabase = new Proxy({} as SupabaseClient<Database>, {
 // resolving to { data: null, error: null, count: null }.
 
 const EMPTY_RESULT = { data: null, error: null, count: null };
-const emptyPromise = () => Promise.resolve(EMPTY_RESULT);
 
-function chainable(): ReturnType<typeof buildChain> {
+function chainable(): any {
   return buildChain();
 }
 
-function buildChain() {
-  const p: Record<string, unknown> = {};
+function buildChain(): any {
+  const p: any = {};
   const methods = [
     'select','insert','update','upsert','delete',
     'eq','neq','gt','gte','lt','lte','like','ilike','in',
@@ -96,7 +95,7 @@ function buildChain() {
   p.then = (resolve: (v: typeof EMPTY_RESULT) => unknown) => Promise.resolve(EMPTY_RESULT).then(resolve);
   p.catch = (reject: (e: unknown) => unknown) => Promise.resolve(EMPTY_RESULT).catch(reject);
   p.finally = (fn: () => void) => Promise.resolve(EMPTY_RESULT).finally(fn);
-  return p as unknown as ReturnType<SupabaseClient['from']>;
+  return p as any;
 }
 
 function createFromStub() {

@@ -145,10 +145,40 @@ export interface Database {
       };
       create_order: {
         Args: CreateOrderArgs;
-        Returns: string; // returns order id
+        Returns: CreateOrderResult;   // jsonb — changed in migration 006
+      };
+      create_staff_whatsapp_order: {
+        Args: {
+          p_order_type: OrderType;
+          p_payment_method: PaymentMethod;
+          p_customer_name: string;
+          p_customer_phone: string;
+          p_customer_email: string | null;
+          p_delivery_address: string | null;
+          p_delivery_landmark: string | null;
+          p_customer_notes: string | null;
+          p_items: Array<{ menu_item_id: string; quantity: number; special_request?: string | null }>;
+        };
+        Returns: CreateOrderResult;
+      };
+      track_order_by_number: {
+        Args: { p_order_number: string; p_phone: string };
+        Returns: Record<string, unknown>;
+      };
+      is_location_open: {
+        Args: { p_location_id: string };
+        Returns: boolean;
+      };
+      get_staff_location_id: {
+        Args: { p_user_id: string };
+        Returns: string | null;
       };
       get_user_role: {
         Args: { user_id: string };
+        Returns: UserRole;
+      };
+      auth_user_role: {
+        Args: Record<string, never>;
         Returns: UserRole;
       };
     };
@@ -161,6 +191,8 @@ export interface Database {
       contact_status: ContactStatus;
       gallery_category: GalleryCategory;
       notification_type: NotificationType;
+      order_source: OrderSource;
+      payment_method: PaymentMethod;
     };
   };
 }
