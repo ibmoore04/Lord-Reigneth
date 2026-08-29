@@ -91,11 +91,19 @@ export async function getOrderByNumber(orderNumber: string): Promise<OrderWithIt
   return data as OrderWithItems | null;
 }
 
-// ── Fetch current user's orders ───────────────────────────
+// ── Fetch the authenticated customer's own orders ────────
+// IMPORTANT: We explicitly filter by customer_id here.
+// Never rely on RLS alone for customer-facing queries —
+// defence-in-depth prevents any policy misconfiguration from
+// leaking another user's orders.
 export async function getMyOrders(): Promise<Order[]> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
   const { data, error } = await supabase
     .from('orders')
     .select('*')
+    .eq('customer_id', user.id)   // ← explicit filter, not RLS alone
     .order('created_at', { ascending: false });
 
   if (error) throw new Error(error.message);

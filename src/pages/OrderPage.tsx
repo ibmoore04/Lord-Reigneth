@@ -14,43 +14,88 @@ import { Search, ShoppingCart, MessageCircle, ImageOff, MapPin, Truck, Package,
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { OrderStatusTracker } from '../components/ordering/OrderStatusTracker';
+// Static image lookup — maps slug → local image path
+// Used as a fallback when Supabase image_url is not yet populated
+import { MENU_ITEMS as STATIC_ITEMS } from '../data/menu';
 
-// ─────────────────── Menu food card ──────────────────────
+const STATIC_IMAGE_MAP: Record<string, string> = {};
+for (const s of STATIC_ITEMS) {
+  if (s.image) STATIC_IMAGE_MAP[s.id] = s.image;
+}
+
+/** Resolve the best available image for a DB menu item */
+function resolveImage(item: MenuItem): string | null {
+  if (item.image_url) return item.image_url;
+  // Fall back to static map keyed by DB slug matching static id
+  return STATIC_IMAGE_MAP[item.slug] ?? STATIC_IMAGE_MAP[item.id] ?? null;
+}
+
+// ─────────────────── Menu food card (horizontal row) ─────
 function OrderFoodCard({ item }: { item: MenuItem }) {
   const [imgErr, setImgErr] = useState(false);
   const { openCart } = useCartStore();
+  const imageSrc = resolveImage(item);
 
   return (
-    <article className="bg-white rounded-xl overflow-hidden border border-cream-200 hover:border-primary-200 hover:shadow-md transition-all duration-200 flex flex-col">
-      <div className="relative aspect-[4/3] bg-cream-200 overflow-hidden">
-        {item.image_url && !imgErr ? (
-          <img src={item.image_url} alt={item.name} loading="lazy"
-            className="w-full h-full object-cover"
-            onError={() => setImgErr(true)} />
+    <article className={cn(
+      'group bg-white rounded-2xl border transition-all duration-200',
+      'flex flex-row gap-0 overflow-hidden',
+      'hover:shadow-lg hover:border-primary-200',
+      item.is_available ? 'border-cream-200' : 'border-cream-200 opacity-75',
+    )}>
+      {/* Image — fixed square */}
+      <div className="relative w-28 sm:w-32 shrink-0 bg-cream-200 overflow-hidden">
+        {imageSrc && !imgErr ? (
+          <img
+            src={imageSrc}
+            alt={item.name}
+            loading="lazy"
+            decoding="async"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={() => setImgErr(true)}
+          />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <ImageOff className="w-8 h-8 text-charcoal-300" aria-hidden="true" />
+          <div className="w-full h-full flex items-center justify-center min-h-[112px]">
+            <ImageOff className="w-7 h-7 text-charcoal-300" aria-hidden="true" />
           </div>
         )}
+
+        {/* Unavailable overlay */}
         {!item.is_available && (
-          <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-            <span className="text-xs font-semibold text-charcoal-500 bg-white px-2 py-1 rounded-full border">
-              Unavailable
+          <div className="absolute inset-0 bg-white/75 flex items-center justify-center">
+            <span className="text-[10px] font-bold text-charcoal-500 text-center px-1 leading-tight">
+              Sold Out
             </span>
           </div>
         )}
       </div>
-      <div className="p-4 flex flex-col flex-1">
-        <h3 className="font-semibold text-charcoal-800 text-sm leading-snug mb-1">{item.name}</h3>
-        {item.description && (
-          <p className="text-xs text-charcoal-500 mb-3 flex-1 line-clamp-2">{item.description}</p>
-        )}
-        {item.price != null && (
-          <p className="text-base font-bold text-primary-700 mb-3">
-            ₦{item.price.toLocaleString()}
-          </p>
-        )}
-        <AddToCartButton item={item} size="sm" onAdded={openCart} />
+
+      {/* Details */}
+      <div className="flex flex-col flex-1 min-w-0 p-3 sm:p-4 justify-between gap-2">
+        <div>
+          <h3 className="font-display font-semibold text-charcoal-800 text-sm sm:text-base leading-snug">
+            {item.name}
+          </h3>
+          {item.description && (
+            <p className="text-xs text-charcoal-500 leading-relaxed mt-1 line-clamp-2">
+              {item.description}
+            </p>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          {item.price != null ? (
+            <span className="text-sm sm:text-base font-bold text-primary-700">
+              ₦{item.price.toLocaleString()}
+            </span>
+          ) : (
+            <span className="text-xs text-charcoal-400 italic">Price on request</span>
+          )}
+
+          <div className="shrink-0">
+            <AddToCartButton item={item} size="sm" onAdded={openCart} />
+          </div>
+        </div>
       </div>
     </article>
   );
@@ -418,7 +463,7 @@ export function OrderPage() {
               ) : filtered.length === 0 ? (
                 <EmptyState title="No items found" description="Try adjusting your search or category filter." />
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="space-y-3">
                   {filtered.map((item: MenuItem) => (
                     <OrderFoodCard key={item.id} item={item} />
                   ))}

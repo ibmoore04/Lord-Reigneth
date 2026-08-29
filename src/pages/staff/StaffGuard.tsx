@@ -14,7 +14,7 @@ interface StaffGuardProps {
 }
 
 export function StaffGuard({ children }: StaffGuardProps) {
-  const { loading, isAuthenticated, isStaff, role, profile } = useAuthContext();
+  const { loading, isAuthenticated, isStaff, role, profile, user } = useAuthContext();
   const location = useLocation();
 
   if (loading) {
@@ -29,7 +29,13 @@ export function StaffGuard({ children }: StaffGuardProps) {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
-  // Admins have full access to admin panel, redirect them there
+  // Force password reset if the flag is set on the user metadata
+  const needsReset = user?.user_metadata?.needs_password_reset === true;
+  if (needsReset) {
+    return <Navigate to="/auth/reset-password" replace />;
+  }
+
+  // Admins → redirect to admin panel
   if (role === 'admin') {
     return <Navigate to="/admin" replace />;
   }

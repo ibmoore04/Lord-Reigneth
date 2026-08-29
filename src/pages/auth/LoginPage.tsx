@@ -22,7 +22,15 @@ export function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      await signIn(email, password);
+      const result = await signIn(email, password);
+
+      // If the account was created via staff invitation, force a password reset
+      const needsReset = result.user?.user_metadata?.needs_password_reset === true;
+      if (needsReset) {
+        navigate('/auth/reset-password', { replace: true });
+        return;
+      }
+
       navigate(from, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to sign in. Please try again.');
