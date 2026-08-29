@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SEO } from '../components/layout/SEO';
+import { SEO, BreadcrumbSchema } from '../components/layout/SEO';
 import { SectionHeading } from '../components/ui/SectionHeading';
 import { FoodCard } from '../components/ui/FoodCard';
 import { EmptyState } from '../components/ui/States';
@@ -21,7 +21,9 @@ export function MenuPage() {
         title="Menu"
         description="Explore the full Lord Reigneth Foods menu — rice dishes, swallows, soups, proteins, sides, snacks and refreshing drinks. Authentic Nigerian food in Ijebu Ode."
         canonical="/menu"
+        keywords="Nigerian food menu, jollof rice Ijebu Ode, pounded yam, egusi soup, peppered chicken, Nigerian snacks, zobo drink"
       />
+      <BreadcrumbSchema items={[{ name: 'Menu', href: '/menu' }]} />
 
       <main id="main-content" className="pt-16 lg:pt-20">
         {/* Page Header */}

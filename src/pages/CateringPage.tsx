@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SEO } from '../components/layout/SEO';
+import { SEO, CateringFAQSchema, BreadcrumbSchema } from '../components/layout/SEO';
 import { SectionHeading } from '../components/ui/SectionHeading';
 import { Button } from '../components/ui/Button';
 import { WhatsAppButton } from '../components/ui/WhatsAppButton';
@@ -101,7 +101,10 @@ export function CateringPage() {
         title="Catering Services"
         description="Lord Reigneth Foods outdoor catering — authentic Nigerian cuisine for weddings, birthdays, corporate events and all celebrations. Based in Ijebu Ode, Ogun State."
         canonical="/catering"
+        keywords="outdoor catering Ijebu Ode, wedding catering Nigeria, event catering Ogun State, Nigerian food catering"
       />
+      <CateringFAQSchema />
+      <BreadcrumbSchema items={[{ name: 'Catering', href: '/catering' }]} />
 
       <main id="main-content" className="pt-16 lg:pt-20">
         {/* Hero */}

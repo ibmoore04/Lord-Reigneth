@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SEO } from '../components/layout/SEO';
+import { SEO, BreadcrumbSchema } from '../components/layout/SEO';
 import { SectionHeading } from '../components/ui/SectionHeading';
 import { GALLERY_ITEMS, GALLERY_CATEGORIES } from '../data/gallery';
 import { EmptyState } from '../components/ui/States';
@@ -58,6 +58,7 @@ export function GalleryPage() {
         description="Browse photos of Lord Reigneth Foods — our food, restaurant, catering events and behind the scenes. Authentic Nigerian cuisine in Ijebu Ode."
         canonical="/gallery"
       />
+      <BreadcrumbSchema items={[{ name: 'Gallery', href: '/gallery' }]} />
 
       <main id="main-content" className="pt-16 lg:pt-20">
         {/* Header */}

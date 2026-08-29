@@ -9,7 +9,7 @@ export const SITE_CONFIG = {
   tagline: 'Simply Delicious!',
   description:
     'Lord Reigneth Foods — Over 25 years of serving Ijebu Ode with authentic Nigerian meals, snacks, drinks and outdoor catering.',
-  url: 'https://lordreignethfoods.com',
+  url: 'https://lord-reigneth.vercel.app',
   founder: 'Deaconess Comfort Agoro',
   yearsOfService: 25,
 

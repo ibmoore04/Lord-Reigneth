@@ -14,7 +14,6 @@
   </url>
 
   <!-- ── Order Online ─────────────────────────────────── -->
-  <!-- High priority — primary conversion page -->
   <url>
     <loc>https://lord-reigneth.vercel.app/order</loc>
     <lastmod>2026-08-29</lastmod>
@@ -70,7 +69,7 @@
     <priority>0.65</priority>
   </url>
 
-  <!-- ── Order Tracking (public, indexed for brand searches) ── -->
+  <!-- ── Order Tracking ───────────────────────────────── -->
   <url>
     <loc>https://lord-reigneth.vercel.app/track</loc>
     <lastmod>2026-08-29</lastmod>

@@ -1,5 +1,5 @@
 # Lord Reigneth Foods — robots.txt
-# https://lordreignethfoods.com
+# https://lord-reigneth.vercel.app
 
 User-agent: *
 Allow: /
@@ -17,4 +17,4 @@ Disallow: /forgot-password
 Disallow: /auth/
 
 # ── Sitemap ──
-Sitemap: https://lordreignethfoods.com/sitemap.xml
+Sitemap: https://lord-reigneth.vercel.app/sitemap.xml

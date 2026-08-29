@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { SEO } from '../components/layout/SEO';
+import { SEO, BreadcrumbSchema } from '../components/layout/SEO';
 import { useMenu } from '../hooks/useMenu';
 import { useLocations } from '../hooks/useLocations';
 import { useCartStore } from '../store/cartStore';
@@ -404,9 +404,11 @@ export function OrderPage() {
     <>
       <SEO
         title="Order Online"
-        description="Order authentic Nigerian food from Lord Reigneth Foods online. Browse our menu, add to cart, and checkout — or order via WhatsApp."
+        description="Order authentic Nigerian food from Lord Reigneth Foods online. Jollof rice, pounded yam, peppered chicken and more — pickup or delivery in Ijebu Ode."
         canonical="/order"
+        keywords="order Nigerian food online Ijebu Ode, food delivery Ijebu Ode, order jollof rice online"
       />
+      <BreadcrumbSchema items={[{ name: 'Order Online', href: '/order' }]} />
       {/* CartDrawer is already mounted globally in Navbar — do NOT mount it here again */}
 
       <main id="main-content" className="pt-16 lg:pt-20 min-h-screen bg-cream-100">

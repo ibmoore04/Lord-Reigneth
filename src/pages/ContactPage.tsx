@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SEO } from '../components/layout/SEO';
+import { SEO, BreadcrumbSchema } from '../components/layout/SEO';
 import { SectionHeading } from '../components/ui/SectionHeading';
 import { Button } from '../components/ui/Button';
 import { WhatsAppButton } from '../components/ui/WhatsAppButton';
@@ -107,6 +107,7 @@ export function ContactPage() {
         description="Get in touch with Lord Reigneth Foods — call us, send a WhatsApp message, or use our contact form. Located at 13, Old Ondo Benin Road, Ijebu Ode."
         canonical="/contact"
       />
+      <BreadcrumbSchema items={[{ name: 'Contact', href: '/contact' }]} />
 
       <main id="main-content" className="pt-16 lg:pt-20">
         {/* Page Header */}

@@ -1,4 +1,4 @@
-import { SEO } from '../components/layout/SEO';
+import { SEO, BreadcrumbSchema } from '../components/layout/SEO';
 import { SectionHeading } from '../components/ui/SectionHeading';
 import { motion, type Variants } from 'framer-motion';
 import { SITE_CONFIG } from '../config/site';
@@ -46,7 +46,9 @@ export function OurStoryPage() {
         title="Our Story"
         description="The story of Lord Reigneth Foods — founded by Deaconess Comfort Agoro. From a single cooler to a trusted Nigerian restaurant with 25+ years of serving Ijebu Ode."
         canonical="/our-story"
+        keywords="Lord Reigneth Foods history, Deaconess Comfort Agoro, Nigerian restaurant Ijebu Ode history, 25 years restaurant"
       />
+      <BreadcrumbSchema items={[{ name: 'Our Story', href: '/our-story' }]} />
 
       <main id="main-content" className="pt-16 lg:pt-20">
         {/* Hero */}

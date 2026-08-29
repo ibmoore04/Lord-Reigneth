@@ -1,4 +1,4 @@
-import { SEO } from '../components/layout/SEO';
+import { SEO, LocationsSchema, BreadcrumbSchema } from '../components/layout/SEO';
 import { SectionHeading } from '../components/ui/SectionHeading';
 import { LocationCard } from '../components/ui/LocationCard';
 import { LOCATIONS } from '../data/locations';
@@ -13,7 +13,10 @@ export function LocationsPage() {
         title="Our Locations"
         description="Find Lord Reigneth Foods near you — Main Outlet at 13 Old Ondo Benin Road, Lagos Garage, and Ilese. Open Monday–Saturday 7:00 AM–9:00 PM."
         canonical="/locations"
+        keywords="Lord Reigneth Foods location, restaurant Ijebu Ode address, Lagos Garage food, Ilese restaurant"
       />
+      <LocationsSchema />
+      <BreadcrumbSchema items={[{ name: 'Locations', href: '/locations' }]} />
 
       <main id="main-content" className="pt-16 lg:pt-20">
         {/* Header */}
