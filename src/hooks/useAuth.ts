@@ -6,7 +6,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
-import type { User, Session } from '@supabase/supabase-js';
+import type { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
 import type { Profile, UserRole } from '../types/database';
 import * as authService from '../services/authService';
 
@@ -51,7 +51,9 @@ export function useAuth() {
 
   useEffect(() => {
     // Initial session check
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    (async () => {
+      const res = await supabase.auth.getSession();
+      const session = res.data.session as Session | null;
       setState((prev) => ({
         ...prev,
         session,
@@ -63,11 +65,11 @@ export function useAuth() {
       } else {
         setState((prev) => ({ ...prev, loading: false }));
       }
-    });
+    })();
 
     // Subscribe to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (_event: AuthChangeEvent, session: Session | null) => {
         setState((prev) => ({
           ...prev,
           session,

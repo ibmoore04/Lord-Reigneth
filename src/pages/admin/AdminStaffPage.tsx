@@ -205,8 +205,8 @@ function EditModal({
     setError(null);
     try {
       const updated = await updateStaffProfile(s.id, {
-        full_name:   form.full_name || null,
-        phone:       form.phone || null,
+        full_name:   form.full_name || undefined,
+        phone:       form.phone || undefined,
         location_id: form.location_id || null,
         is_active:   form.is_active,
         role:        form.role,

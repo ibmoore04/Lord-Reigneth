@@ -56,10 +56,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
         .eq('role', 'customer'),
     ]);
 
-  const todayRevenue = (ordersToday.data ?? []).reduce(
-    (sum, o) => sum + (o.total ?? 0),
-    0,
-  );
+  const todayOrdersData = (ordersToday.data ?? []) as { id: string; total: number }[];
+  const todayRevenue = todayOrdersData.reduce((sum: number, o) => sum + (o.total ?? 0), 0);
 
   return {
     todayOrders: ordersToday.count ?? 0,
@@ -81,10 +79,11 @@ export async function getSiteSettings(): Promise<Record<string, string>> {
 
   if (error) throw new Error(error.message);
 
-  return (data ?? []).reduce<Record<string, string>>((acc, row) => {
+  const rows = (data ?? []) as SiteSetting[];
+  return rows.reduce((acc: Record<string, string>, row: SiteSetting) => {
     acc[row.key] = row.value ?? '';
     return acc;
-  }, {});
+  }, {} as Record<string, string>);
 }
 
 export async function updateSiteSetting(

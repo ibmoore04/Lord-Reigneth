@@ -1,4 +1,11 @@
-import { Link } from 'react-router-dom';
+// ============================================================
+// FoodCard — used on the homepage and /menu page.
+// Items here come from static data (no prices).
+// "Order Now" navigates to /order and pre-filters to this item
+// so the customer can add it to cart with the real price.
+// ============================================================
+
+import { useNavigate } from 'react-router-dom';
 import { ShoppingBag, ImageOff } from 'lucide-react';
 import { useState } from 'react';
 import type { MenuItem } from '../../types';
@@ -11,6 +18,13 @@ interface FoodCardProps {
 
 export function FoodCard({ item, className }: FoodCardProps) {
   const [imgError, setImgError] = useState(false);
+  const navigate = useNavigate();
+
+  function handleOrderNow() {
+    // Navigate to the order page and pass a search query so the item
+    // is highlighted/filtered for the customer immediately.
+    navigate(`/order?q=${encodeURIComponent(item.name)}`);
+  }
 
   return (
     <article
@@ -51,9 +65,9 @@ export function FoodCard({ item, className }: FoodCardProps) {
           {item.description}
         </p>
 
-        {/* Takes customer to the full ordering page */}
-        <Link
-          to="/order"
+        <button
+          type="button"
+          onClick={handleOrderNow}
           className={cn(
             'inline-flex items-center justify-center gap-2',
             'w-full px-4 py-2.5 rounded-md',
@@ -65,7 +79,7 @@ export function FoodCard({ item, className }: FoodCardProps) {
         >
           <ShoppingBag className="w-4 h-4" aria-hidden="true" />
           Order Now
-        </Link>
+        </button>
       </div>
     </article>
   );

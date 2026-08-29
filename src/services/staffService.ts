@@ -9,13 +9,14 @@ import type {
   Profile,
   ProfileInsert,
   LocationMenuItem,
-  LocationMenuItemInsert,
   MenuItem,
   CreateOrderResult,
   OrderType,
   PaymentMethod,
   CartItem,
+  Order,
 } from '../types/database';
+import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
 // ─────────────────── Staff profile helpers ────────────────
 
@@ -90,8 +91,8 @@ export async function createStaffProfile(
 export async function updateStaffProfile(
   staffId: string,
   updates: {
-    full_name?: string;
-    phone?: string;
+    full_name?: string | null;
+    phone?: string | null;
     location_id?: string | null;
     is_active?: boolean;
     role?: 'staff' | 'customer';
@@ -214,8 +215,8 @@ export async function getOutletStats(locationId?: string) {
 /** Subscribe to realtime new orders for staff's outlet. */
 export function subscribeToOutletOrders(
   locationId: string,
-  onInsert: (order: Record<string, unknown>) => void,
-  onUpdate: (order: Record<string, unknown>) => void,
+  onInsert: (order: Order) => void,
+  onUpdate: (order: Order) => void,
 ) {
   const channel = supabase
     .channel(`outlet-orders-${locationId}`)
@@ -227,7 +228,7 @@ export function subscribeToOutletOrders(
         table: 'orders',
         filter: `location_id=eq.${locationId}`,
       },
-      (payload) => onInsert(payload.new),
+      (payload: RealtimePostgresChangesPayload<Order>) => onInsert(payload.new as Order),
     )
     .on(
       'postgres_changes',
@@ -237,7 +238,7 @@ export function subscribeToOutletOrders(
         table: 'orders',
         filter: `location_id=eq.${locationId}`,
       },
-      (payload) => onUpdate(payload.new),
+      (payload: RealtimePostgresChangesPayload<Order>) => onUpdate(payload.new as Order),
     )
     .subscribe();
 
@@ -316,11 +317,14 @@ export async function getMenuWithOutletAvailability(
 
   if (menuRes.error) throw new Error(menuRes.error.message);
 
-  const overrides = new Map(
-    (overridesRes.data ?? []).map((o) => [o.menu_item_id, o.is_available]),
+  const overrides = new Map<string, boolean>(
+    (overridesRes.data ?? []).map((o: { menu_item_id: string; is_available: boolean }) => [
+      o.menu_item_id,
+      o.is_available,
+    ]),
   );
 
-  return (menuRes.data ?? []).map((item) => ({
+  return ((menuRes.data ?? []) as MenuItem[]).map((item) => ({
     ...item,
     outlet_available: overrides.has(item.id)
       ? (overrides.get(item.id) ?? item.is_available)

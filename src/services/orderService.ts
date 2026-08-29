@@ -17,6 +17,7 @@ import type {
   PaymentMethod,
   CreateOrderResult,
 } from '../types/database';
+import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
 export interface CreateOrderPayload {
   customerId: string | null;
@@ -192,10 +193,8 @@ export async function getOrderSummary() {
       .eq('status', 'completed'),
   ]);
 
-  const todayRevenue = (todayRes.data ?? []).reduce(
-    (sum, o) => sum + (o.total ?? 0),
-    0,
-  );
+  const todayData = (todayRes.data ?? []) as { id: string; total: number }[];
+  const todayRevenue = todayData.reduce((sum: number, o) => sum + (o.total ?? 0), 0);
 
   return {
     todayCount: todayRes.count ?? 0,
@@ -212,7 +211,7 @@ export function subscribeToOrders(callback: (order: Order) => void) {
     .on(
       'postgres_changes',
       { event: 'INSERT', schema: 'public', table: 'orders' },
-      (payload) => callback(payload.new as Order),
+      (payload: RealtimePostgresChangesPayload<Order>) => callback(payload.new as Order),
     )
     .subscribe();
 
@@ -236,7 +235,7 @@ export function subscribeToOrderStatus(
         table: 'orders',
         filter: `id=eq.${orderId}`,
       },
-      (payload) => callback(payload.new as Order),
+      (payload: RealtimePostgresChangesPayload<Order>) => callback(payload.new as Order),
     )
     .subscribe();
 

@@ -88,16 +88,15 @@ export function useOutletOrders(activeOnly = false) {
       locationId,
       (newOrder) => {
         setOrders((prev) => {
-          if (prev.some((o) => o.id === (newOrder as Order).id)) return prev;
-          return [newOrder as Order, ...prev];
+          if (prev.some((o) => o.id === newOrder.id)) return prev;
+          return [newOrder, ...prev];
         });
         setNewOrderAlert(true);
-        // Auto-dismiss alert after 8 seconds
         setTimeout(() => setNewOrderAlert(false), 8000);
       },
       (updated) => {
         setOrders((prev) =>
-          prev.map((o) => o.id === (updated as Order).id ? { ...o, ...(updated as Order) } : o),
+          prev.map((o) => o.id === updated.id ? { ...o, ...updated } : o),
         );
       },
     );

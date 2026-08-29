@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { SEO } from '../components/layout/SEO';
 import { useMenu } from '../hooks/useMenu';
 import { useLocations } from '../hooks/useLocations';
@@ -11,23 +11,33 @@ import { openWhatsApp, generateWhatsAppOrderMessage } from '../services/whatsapp
 import type { MenuCategory, MenuItem, Location, OrderType, PaymentMethod, CreateOrderResult } from '../types/database';
 import { Search, ShoppingCart, MessageCircle, ImageOff, MapPin, Truck, Package,
          CheckCircle, Printer, ArrowRight, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { cn } from '../lib/utils';
-import { OrderStatusTracker } from '../components/ordering/OrderStatusTracker';
-// Static image lookup — maps slug → local image path
+// Static image lookup — maps by id, slug, AND name for maximum coverage
 // Used as a fallback when Supabase image_url is not yet populated
 import { MENU_ITEMS as STATIC_ITEMS } from '../data/menu';
 
-const STATIC_IMAGE_MAP: Record<string, string> = {};
+const STATIC_IMAGE_BY_ID: Record<string, string>   = {};
+const STATIC_IMAGE_BY_SLUG: Record<string, string> = {};
+const STATIC_IMAGE_BY_NAME: Record<string, string> = {};
+
 for (const s of STATIC_ITEMS) {
-  if (s.image) STATIC_IMAGE_MAP[s.id] = s.image;
+  if (s.image) {
+    STATIC_IMAGE_BY_ID[s.id]             = s.image;
+    STATIC_IMAGE_BY_SLUG[s.id]           = s.image; // static id == DB slug in seed
+    STATIC_IMAGE_BY_NAME[s.name.toLowerCase().trim()] = s.image;
+  }
 }
 
 /** Resolve the best available image for a DB menu item */
 function resolveImage(item: MenuItem): string | null {
   if (item.image_url) return item.image_url;
-  // Fall back to static map keyed by DB slug matching static id
-  return STATIC_IMAGE_MAP[item.slug] ?? STATIC_IMAGE_MAP[item.id] ?? null;
+  return (
+    STATIC_IMAGE_BY_SLUG[item.slug]            ??
+    STATIC_IMAGE_BY_ID[item.id]                ??
+    STATIC_IMAGE_BY_NAME[item.name.toLowerCase().trim()] ??
+    null
+  );
 }
 
 // ─────────────────── Menu food card (horizontal row) ─────
@@ -43,19 +53,19 @@ function OrderFoodCard({ item }: { item: MenuItem }) {
       'hover:shadow-lg hover:border-primary-200',
       item.is_available ? 'border-cream-200' : 'border-cream-200 opacity-75',
     )}>
-      {/* Image — fixed square */}
-      <div className="relative w-28 sm:w-32 shrink-0 bg-cream-200 overflow-hidden">
+      {/* Image — full height of card, fixed width */}
+      <div className="relative w-28 sm:w-36 shrink-0 bg-cream-200 overflow-hidden self-stretch min-h-[120px]">
         {imageSrc && !imgErr ? (
           <img
             src={imageSrc}
             alt={item.name}
             loading="lazy"
             decoding="async"
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={() => setImgErr(true)}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center min-h-[112px]">
+          <div className="absolute inset-0 flex items-center justify-center">
             <ImageOff className="w-7 h-7 text-charcoal-300" aria-hidden="true" />
           </div>
         )}
@@ -350,12 +360,20 @@ export function OrderPage() {
   const { categories, items: allItems, loading, error } = useMenu();
   const { locations, loading: locLoading } = useLocations();
   const { items: cartItems, itemCount, openCart } = useCartStore();
+  const [searchParams] = useSearchParams();
 
   const [activeCat,    setActiveCat]    = useState<string>('all');
-  const [search,       setSearch]       = useState('');
+  // Pre-fill search from ?q= param (set by FoodCard "Order Now")
+  const [search,       setSearch]       = useState<string>(() => searchParams.get('q') ?? '');
   const [showCheckout, setShowCheckout] = useState(false);
   const [confirmed,    setConfirmed]    = useState<CreateOrderResult | null>(null);
   const [confirmedLoc, setConfirmedLoc] = useState<Location | null>(null);
+
+  // When ?q= changes (e.g. navigating from a different card), update search
+  useEffect(() => {
+    const q = searchParams.get('q');
+    if (q) setSearch(q);
+  }, [searchParams]);
 
   const filtered = allItems.filter((item) => {
     const catMatch  = activeCat === 'all' || item.category_id === activeCat;
@@ -537,8 +555,8 @@ export function OrderPage() {
 }
 
 // ─────────────────── Desktop cart panel ──────────────────
-function DesktopCartPanel({ items, count, locations, locLoading, onCheckout, onWhatsApp }: {
-  items: ReturnType<typeof useCartStore>['items'];
+function DesktopCartPanel({ items, count, locLoading, onCheckout, onWhatsApp }: {
+  items: import('../types/database').CartItem[];
   count: number;
   locations: Location[];
   locLoading: boolean;

@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SEO } from '../../components/layout/SEO';
 import { supabase } from '../../lib/supabase';
+import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { Eye, EyeOff, KeyRound, CheckCircle } from 'lucide-react';
 
 export function ResetPasswordPage() {
@@ -26,11 +27,9 @@ export function ResetPasswordPage() {
   // at this path so the redirect lands here.
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event) => {
-        // When the recovery token is parsed the event is PASSWORD_RECOVERY
-        if (event === 'PASSWORD_RECOVERY') {
-          // Session is now active with the recovery token — user can update password
-        }
+      (_event: AuthChangeEvent, _session: Session | null) => {
+        // PASSWORD_RECOVERY event fires when the reset link is clicked
+        // Session is automatically activated — nothing extra needed here
       },
     );
     return () => subscription.unsubscribe();
