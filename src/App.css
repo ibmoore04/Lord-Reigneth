@@ -1,0 +1,11 @@
+/* App-level overrides — intentionally minimal.
+   All global styles and design tokens live in src/index.css */
+
+/* Hide scrollbar for category filter strips */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
