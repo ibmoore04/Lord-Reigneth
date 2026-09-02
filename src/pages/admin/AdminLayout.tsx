@@ -1,9 +1,10 @@
 import { type ReactNode, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/AuthContext';
 import {
   LayoutDashboard, ShoppingBag, UtensilsCrossed, Users, CalendarHeart,
   MessageSquare, Images, Star, MapPin, Settings, LogOut, Menu, X, ChefHat,
+  ArrowLeft,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -66,6 +67,22 @@ export function AdminLayout({ children }: { children: ReactNode }) {
           </li>
         ))}
       </ul>
+
+      {/* Back to Website */}
+      <div className="px-3 pt-2 pb-4 border-t border-white/10">
+        <Link
+          to="/"
+          aria-label="Back to Website"
+          className={cn(
+            'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400',
+            'text-white/60 hover:bg-white/10 hover:text-gold-300',
+          )}
+        >
+          <ArrowLeft className="w-4 h-4 shrink-0" aria-hidden="true" />
+          Back to Website
+        </Link>
+      </div>
 
       {/* User + sign out */}
       <div className="px-3 pb-5 border-t border-white/10 pt-4">
